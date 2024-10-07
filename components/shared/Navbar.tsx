@@ -59,7 +59,6 @@ export default function Navbar() {
     }
 
     function Login() {
-
         router.push('/sign-in')
     }
 
@@ -112,15 +111,15 @@ export default function Navbar() {
                                 className="block  rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700"
                             >
                                 {isLoggedIn ? (
-                                    <>
-                                        <LogOutIcon onClick={Logout} className="h-6 w-7 inline-flex pr-1 text-white" />
+                                    <div onClick={Logout}>
+                                        <LogOutIcon className="h-6 w-7 inline-flex pr-1 text-white" />
                                         <span>Logout</span>
-                                    </>
+                                    </div>
                                 ) : (
-                                    <>
-                                        <LogInIcon onClick={Login} className="h-6 w-7 inline-flex pr-1 text-white" />
+                                    <div onClick={Login}>
+                                        <LogInIcon className="h-6 w-7 inline-flex pr-1 text-white" />
                                         <span>Login</span>
-                                    </>
+                                    </div>
                                 )}
                             </button>
                         </li>

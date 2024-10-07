@@ -34,8 +34,8 @@ export default function CreateBlogForm({ action }: { action: string }) {
     const { toast } = useToast();
     const [files, setFiles] = useState<File[]>([]);
 
-    
- 
+
+
 
     // Initialize form with validation
     const form = useForm<z.infer<typeof formSchema>>({
@@ -65,6 +65,12 @@ export default function CreateBlogForm({ action }: { action: string }) {
 
     // Handle form submission
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        const username = localStorage.getItem('username')
+        if (!username) {
+            toast({
+                description: 'Sign in to continue'
+            })
+        }
 
         if (values.image) {
             // Check if image is base64 encoded and needs to be uploaded
@@ -109,7 +115,7 @@ export default function CreateBlogForm({ action }: { action: string }) {
                     toast({
                         description: message
                     });
-                 
+
 
 
                 } else {
@@ -155,14 +161,14 @@ export default function CreateBlogForm({ action }: { action: string }) {
 
 
     return (
-        <div>
+        <div className='bg-black'>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-white">
                     <FormField
                         control={form.control}
                         name="text"
                         render={({ field }) => (
-                            <Textarea rows={4} {...field} className="max-w-full px-3 py-2 border rounded-md focus:outline-none" />
+                            <Textarea rows={4} {...field} className="max-w-full text-white px-3 py-2 border rounded-md focus:outline-none" />
                         )}
                     />
 
@@ -170,16 +176,26 @@ export default function CreateBlogForm({ action }: { action: string }) {
                         control={form.control}
                         name="image"
                         render={({ field }) => (
-                            <Input
-                                id="image-input"
-                                accept="image/*"
-                                onChange={(e) => { handleImage(e, field.onChange) }}
-                                type='file'
-                                className="max-w-full px-3 py-2 border rounded-md focus:outline-none cursor-pointer"
-                            />
+                            <div className="relative text-white">
+                                <label
+                                    htmlFor="image-input"
+                                    className="block max-w-full px-3 py-2 text-white border rounded-md cursor-pointer hover:bg-gray-700"
+                                >
+                                    {form.watch('image') ? (<div className='cursor-pointer'>File Selected</div>) : (<div className='cursor-pointer'>Choose File</div>)}
+                                </label>
+                                <input
+                                    id="image-input"
+                                    accept="image/*"
+                                    onChange={(e) => handleImage(e, field.onChange)}
+                                    type="file"
+                                    className="absolute inset-0 w-full h-full text-white opacity-0 cursor-pointer"
+                                />
+                            </div>
                         )}
                     />
-                    <Button className='text-right' type="submit">Submit</Button>
+
+
+                    <button className='text-right text-white bg-zinc-700 px-2 py-1 rounded-lg' type="submit">Submit</button>
                 </form>
             </Form>
         </div>

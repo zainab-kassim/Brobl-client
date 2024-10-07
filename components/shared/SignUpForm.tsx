@@ -56,15 +56,16 @@ export default function SignUpForm() {
         username: values.username,
         password: values.password
       });
-      console.log(res.data)
       const { token, Username, message } = res.data
       console.log(token)
       localStorage.setItem('token', token)
       localStorage.setItem('username', Username)
-      router.push('/')
       toast({
         description: res.data.message// Show the toast message
       })
+      if (!res.data.existingUser) {
+        router.push('/')
+      }
 
     } catch (error) {
       if (error instanceof Error) {
