@@ -48,7 +48,7 @@ export default function SignInForm() {
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
-            const res = await axios.post('https://brobl-server.vercel.app/api/user/signin', {
+            const res = await axios.post('https://localhost:4000/api/user/signin', {
                 username: values.username,
                 password: values.password
             });

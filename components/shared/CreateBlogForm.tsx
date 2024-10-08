@@ -104,7 +104,7 @@ export default function CreateBlogForm({ action }: { action: string }) {
                         imageInput.value = ''; // Clear the file input field manually
                     }
                     const headers = createAuthHeaders(token)
-                    const res = await axios.post('https://brobl-server.vercel.app/api/blog/create', {
+                    const res = await axios.post('https://localhost:4000/api/blog/create', {
                         text: values?.text,
                         img: values?.image,
 

@@ -102,7 +102,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
       if (username && token) {
         form.reset()
         const headers = createAuthHeaders(token)
-        const res = await axios.post(`https://brobl-server.vercel.app/api/blog/${params.blogId}/comment/create`, {
+        const res = await axios.post(`https://localhost:4000/api/blog/${params.blogId}/comment/create`, {
           text: values?.text
 
         }, { headers })
@@ -137,7 +137,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
     try {
       const username = localStorage.getItem('username')
 
-      const res = await axios.get(`https://brobl-server.vercel.app/api/blog/${params.blogId}`);
+      const res = await axios.get(`https://localhost:4000/api/blog/${params.blogId}`);
       const { foundBlog } = res.data;
 
       // Check each blog for likes
@@ -170,7 +170,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
       const token = localStorage.getItem('token')
       const headers = createAuthHeaders(token)
       if (username && token) {
-        const response = await axios.delete(`https://brobl-server.vercel.app/api/blog/${params.blogId}/comment/${commentId}/delete`,
+        const response = await axios.delete(`https://localhost:4000/api/blog/${params.blogId}/comment/${commentId}/delete`,
           { headers })
         const { message } = response.data
         toast({
@@ -189,7 +189,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
       const token = localStorage.getItem('token')
       const headers = createAuthHeaders(token)
       if (username && token) {
-        const response = await axios.delete(`https://brobl-server.vercel.app/api/blog/${params.blogId}/delete`,
+        const response = await axios.delete(`https://localhost:4000/api/blog/${params.blogId}/delete`,
           { headers })
         const { message } = response.data
         toast({
@@ -210,7 +210,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
 
       if (username && token) {
 
-        const response = await axios.post(`https://brobl-server.vercel.app/api/blog/${blogId}/like`,{ 
+        const response = await axios.post(`https://localhost:4000/api/blog/${blogId}/like`,{ 
         },{ headers })
 
         toast({

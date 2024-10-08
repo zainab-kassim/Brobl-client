@@ -93,7 +93,7 @@ export default function showAllBlogs() {
     async function handleBlogs() {
         try {
 
-            const res = await axios.get('https://brobl-server.vercel.app/api/blog/show');
+            const res = await axios.get('https://localhost:4000/api/blog/show');
             const { foundBlogs } = res.data
             const username = localStorage.getItem('username')
 
@@ -133,7 +133,7 @@ export default function showAllBlogs() {
 
             if (username && token) {
 
-                const response = await axios.post(`https://brobl-server.vercel.app/api/blog/${blogId}/like`, {
+                const response = await axios.post(`https://localhost:4000/api/blog/${blogId}/like`, {
                 }, { headers })
 
                 toast({

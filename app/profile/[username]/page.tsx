@@ -51,7 +51,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
       if(params.username){
     
         const username = localStorage.getItem('username')
-        const res = await axios.get(`https://brobl-server.vercel.app/api/blog/userProfile/${params.username}`);
+        const res = await axios.get(`https://localhost:4000/api/blog/userProfile/${params.username}`);
         const { foundUserBlogs } = res.data
 
         // Check each blog for likes
@@ -89,7 +89,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
       if (username && token) {
 
-        const response = await axios.post(`https://brobl-server.vercel.app/api/blog/${blogId}/like`, {
+        const response = await axios.post(`https://localhost:4000/api/blog/${blogId}/like`, {
         }, { headers })
 
         toast({
