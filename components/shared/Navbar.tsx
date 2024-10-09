@@ -79,13 +79,11 @@ export default function Navbar() {
                                 <HomeIcon className="h-6 w-7 inline-flex pr-1 text-white" />  Home
                             </Link>
                         </li>
+                        <li  className="block  rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700">
                         <Dialog>
                             <DialogTrigger>
 
-                                <li
-
-                                    className="block rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700 "
-                                >
+                                <li >
                                     <PlusIcon className="h-6 w-7 inline-flex pr-1  text-white" />     Create
                                 </li>
 
@@ -98,26 +96,28 @@ export default function Navbar() {
                                 <CreateBlogForm action={'Add'} />
                             </DialogContent>
                         </Dialog>
-                        <li>
+                        </li>
+                        <li  className="block  rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700">
                             <button onClick={handleProfileClick}
-                                className="block rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700 "
+                              
                             >
                                 <UserIcon className="h-6 w-7 inline-flex pr-1 text-white" /> Profile
                             </button>
                         </li>
 
-                        <li>
+                        <li  className="block  rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700">
                             <button
-                                className="block  rounded-xl px-5 py-3 text-lg font-semibold text-white hover:bg-gray-700"
+                               
                             >
                                 {isLoggedIn ? (
+                                    
                                     <div onClick={Logout}>
-                                        <LogOutIcon className="h-6 w-7 inline-flex pr-1 text-white" />
+                                        <LogOutIcon className="h-6 w-7 inline-flex ml-1 pr-2 text-white" />
                                         <span>Logout</span>
                                     </div>
                                 ) : (
                                     <div onClick={Login}>
-                                        <LogInIcon className="h-6 w-7 inline-flex pr-1 text-white" />
+                                        <LogInIcon className="h-6 w-7 inline-flex ml-1 pr-2 text-white" />
                                         <span>Login</span>
                                     </div>
                                 )}

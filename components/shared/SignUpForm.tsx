@@ -15,7 +15,7 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
-import { Island_Moments } from 'next/font/google';
+
 
 
 
@@ -29,10 +29,6 @@ const FormSchema = z.object({
   }),
 })
 
-const islandMoments = Island_Moments({
-  weight: '400',
-  subsets: ['latin'],
-});
 
 
 export default function SignUpForm() {
@@ -52,7 +48,7 @@ export default function SignUpForm() {
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
 
-      const res = await axios.post('http://localhost:4000/api/user/signup', {
+      const res = await axios.post('https://brobl-server.vercel.app/api/user/signup', {
         username: values.username,
         password: values.password
       });
@@ -89,7 +85,7 @@ export default function SignUpForm() {
     <div className="flex justify-center min-h-screen bg-white" >
       <div className="bg-white rounded-3xl mx-2 px-7 py-16  my-auto shadow-sm drop-shadow-xl ">
         <div className="mx-auto max-w-lg text-center ">
-          <h1 className={`${islandMoments.className} text-7xl`}>Brobl</h1>
+          <h1 className={`font-island-moments text-7xl`}>Brobl</h1>
           <p className="mb-4 px-2 text-base font-normal text-zinc-700">
             Share your thoughts and ideas today
           </p>
@@ -135,8 +131,8 @@ export default function SignUpForm() {
             <p className="text-sm text-left text-zinc-900 mt-2">
               Already have an account? <a className="underline" href="/sign-in">Sign in</a>
             </p>
-            <div className="flex justify-center mt-9">
-              <Button type="submit" className="text-center  bg-black text-white py-1.5 px-24">
+            <div className="flex justify-center max-w-96 mt-9">
+              <Button type="submit" className="text-center  bg-black text-white w-full ">
                 Sign up
               </Button>
             </div>
