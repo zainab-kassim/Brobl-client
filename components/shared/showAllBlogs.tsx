@@ -13,6 +13,7 @@ import Image from 'next/image'
 import profilePic from '../../public/man.png'
 import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
+import useBlogsStore from './updateBlog';
 
 
 export default function showAllBlogs() {
@@ -20,37 +21,13 @@ export default function showAllBlogs() {
         [key: string]: boolean; // Each blog ID will map to a boolean indicating like state
     };
 
-
-    const [Blogs, setBlogs] = useState<Blogs[]>([]);
+    const { blogs, setBlogs } = useBlogsStore(); // Get the blogs and setBlogs from the store
     const [loading, setLoading] = useState(true); // Add loading state
     const [isTruncated, setIsTruncated] = useState(true); // State for truncation
-    const maxLength = 50; // The maximum length before 
+    const maxLength = 135; // The maximum length before 
     const [color, setColor] = useState<ColorState>({});
     const router = useRouter();
     const { toast } = useToast();
-
-
-
-
-
-    interface Author {
-        username: string;
-        _id: string;
-    }
-
-    interface Blogs {
-        author: Author;
-        username: string;
-        _id: string;
-        text: string;
-        img: string;
-        likes: Likes[];
-
-    }
-
-    interface Likes {
-        _id: string;
-    }
 
 
 
@@ -166,7 +143,7 @@ export default function showAllBlogs() {
 
     return (
         <>
-            {Blogs.map((blog) => (
+            {blogs.map((blog) => (
                 <div key={blog._id}>
                     <li className="flex p-4 my-2  cursor-pointer">
                         <div className="flex flex-col flex-grow mx-2 xl:ml-28 xl:mr-96 lg:mx-32 md:mx-40 sm:mx-20">

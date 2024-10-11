@@ -17,24 +17,42 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useUploadThing } from "@/lib/uploadthing"
 import { isBase64Image } from "@/lib/utils"
+import useBlogsStore from './updateBlog'
+import ButtonLoader from '../ui/buttonLoader'
+import useFormStore from './useForm'
+
 
 
 
 const formSchema = z.object({
-    text: z.string().optional(),
-    image: z.string().optional(),
-}).refine((data) => data.text || data.image, {
-    message: "Either text or image must be provided",
-    path: ["text", "image"], // Error can be shown for both fields
+    text: z.string().min(5, { message: "Text must be at least 5 characters long" }), // Text must be at least 5 characters
+    image: z.string().min(1, { message: "An image URL is required" }), // Image URL must be provided
+}).refine((data) => data.image.length > 0, {
+    message: "Only one image is required",
+    path: ["image"], // Error will be shown for the image field
 });
+
 
 export default function CreateBlogForm({ action }: { action: string }) {
     const { startUpload } = useUploadThing("media");
     const router = useRouter();
     const { toast } = useToast();
     const [files, setFiles] = useState<File[]>([]);
+    const { setBlogs } = useBlogsStore(); // Get the blogs and setBlogs from the store
+    const [loading, setLoading] = useState<boolean>(false);
+    const { setShowForm } = useFormStore()
 
 
+
+    async function HandleUpdatedBlogs() {
+        try {
+            const res = await axios.get('https://brobl-server.vercel.app/api/blog/show');
+            const { foundBlogs } = res.data
+            setBlogs(foundBlogs)
+        } catch (error) {
+            console.log(Error)
+        }
+    }
 
 
     // Initialize form with validation
@@ -65,6 +83,7 @@ export default function CreateBlogForm({ action }: { action: string }) {
 
     // Handle form submission
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        setLoading(true)
         const username = localStorage.getItem('username')
         if (!username) {
             toast({
@@ -93,6 +112,8 @@ export default function CreateBlogForm({ action }: { action: string }) {
         // Handle form submission logic (e.g., API call)
         if (action === 'Add') {
             try {
+                // Set loading to true while submitting
+
                 // API call to create interaction
                 const username = localStorage.getItem('username')
                 const token = localStorage.getItem('token')
@@ -113,11 +134,12 @@ export default function CreateBlogForm({ action }: { action: string }) {
 
                     const { message, newBlog } = res.data;
                     toast({
-                        description: message
+                        description: message,
+
                     });
 
-
-
+                    HandleUpdatedBlogs()
+                    setShowForm(false)
                 } else {
                     router.push('/sign-up')
                 }
@@ -147,6 +169,8 @@ export default function CreateBlogForm({ action }: { action: string }) {
                     errorMessage = 'An unexpected error occurred. Please try again later.';
                 }
 
+            } finally {
+                setLoading(false); // Set loading to false when data is fetched or an error occurs
             }
         }
 
@@ -160,6 +184,7 @@ export default function CreateBlogForm({ action }: { action: string }) {
     }
 
 
+
     return (
         <div className='bg-black'>
             <Form {...form}>
@@ -168,34 +193,47 @@ export default function CreateBlogForm({ action }: { action: string }) {
                         control={form.control}
                         name="text"
                         render={({ field }) => (
-                            <Textarea rows={4} {...field} className="max-w-full text-white px-3 py-2 border rounded-md focus:outline-none" />
+                            <>
+                                <Textarea rows={4} {...field} className="max-w- font-normal text-white px-3 py-2 border rounded-md focus:outline-none" />
+                                <FormMessage />
+                            </>
                         )}
+
                     />
 
                     <FormField
                         control={form.control}
                         name="image"
                         render={({ field }) => (
-                            <div className="relative text-white">
-                                <label
-                                    htmlFor="image-input"
-                                    className="block max-w-full px-3 py-2 text-white border rounded-md cursor-pointer hover:bg-gray-700"
-                                >
-                                    {form.watch('image') ? (<div className='cursor-pointer'>File Selected</div>) : (<div className='cursor-pointer'>Choose File</div>)}
-                                </label>
-                                <input
-                                    id="image-input"
-                                    accept="image/*"
-                                    onChange={(e) => handleImage(e, field.onChange)}
-                                    type="file"
-                                    className="absolute inset-0 w-full h-full text-white opacity-0 cursor-pointer"
-                                />
-                            </div>
+                            <>
+                                <div className="relative text-white">
+                                    <label
+                                        htmlFor="image-input"
+                                        className="block max-w-full text-lg px-3 py-2 text-white border rounded-md cursor-pointer hover:bg-gray-700"
+                                    >
+                                        {form.watch('image') ? (<div className='cursor-pointer'>File Selected</div>) : (<div className='cursor-pointer'>Choose File</div>)}
+                                    </label>
+                                    <input
+                                        id="image-input"
+                                        accept="image/*"
+                                        onChange={(e) => handleImage(e, field.onChange)}
+                                        type="file"
+                                        className="absolute inset-0 w-full h-full text-white opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                                <FormMessage />
+                            </>
                         )}
                     />
 
 
-                    <button className='text-right text-white bg-zinc-700 px-2 py-1 rounded-lg' type="submit">Submit</button>
+                    <button
+                        className='flex items-center justify-center font-medium text-base text-white hover:bg-zinc-900 bg-zinc-800 px-3 py-1 rounded-lg'
+                        type="submit"
+                    >
+                        Submit
+                        {loading && <span className="ml-2 flex items-center"><ButtonLoader /></span>}
+                    </button>
                 </form>
             </Form>
         </div>

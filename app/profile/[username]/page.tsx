@@ -9,6 +9,7 @@ import { HeartIcon } from 'lucide-react';
 import { ChatBubbleIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import profilePic from '../../../public/man.png'
+import ProfileLoader from '@/components/ui/loader2';
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
   const [userBlogs, setuserBlogs] = useState<userBlogs[]>([])
@@ -48,8 +49,8 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
   async function handleProfile() {
     try {
-      if(params.username){
-    
+      if (params.username) {
+
         const username = localStorage.getItem('username')
         const res = await axios.get(`https://brobl-server.vercel.app/api/blog/userProfile/${params.username}`);
         const { foundUserBlogs } = res.data
@@ -78,7 +79,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
   useEffect(() => {
     handleProfile()
-  },[])
+  }, [])
 
 
   async function handleLikeClick(blogId: string) {
@@ -99,11 +100,11 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
         handleProfile()
 
-      }else{
+      } else {
         toast({
-            description:'sign in to continue'
+          description: 'sign in to continue'
         })
-    }
+      }
     } catch (error) {
       console.log(error)
     }
@@ -122,36 +123,35 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
   }
 
-
-
   return (
-    <>
-      {userBlogs.map((blog) => (
-        <div key={blog._id} className='pb-36'>
-          <div className="flex items-center m-4">
-            <Image
-              src={profilePic}
-              alt="profilepic"
-              width={100}
-              height={100}
-              className="w-12 h-12 rounded-full mr-3"
-              quality={100}
-              priority
-            />
-
-            <div>
-              <span className="hover:underline text-white font-semibold text-lg">{blog.author.username} </span>
-              <p className=" text-gray-500 font-base text-lg">@{blog.author.username} </p>
-
-            </div>
-
-
+    userBlogs && userBlogs.length > 0 ? (
+      <div className='pb-28'>
+        <div className="flex items-center m-4">
+          <Image
+            src={profilePic}
+            alt="profilepic"
+            width={100}
+            height={100}
+            className="w-12 h-12 rounded-full mr-3"
+            quality={100}
+            priority
+          />
+          <div>
+            <span className="hover:underline text-white font-semibold text-lg">
+              {userBlogs[0]?.author.username} {/* Adjusted to access the first blog's author */}
+            </span>
+            <p className="text-gray-500 font-base text-lg">
+              @{userBlogs[0]?.author.username}
+            </p>
           </div>
-          <div className="flex my-3 ">
-            <div className="flex-grow border-b border-gray-700"></div>
-          </div>
+        </div>
 
-          <li className="flex p-4 my-2  cursor-pointer">
+        <div className="flex my-3">
+          <div className="flex-grow border-b border-gray-700"></div>
+        </div>
+
+        {userBlogs.map((blog) => (
+          <li key={blog._id} className=" flex p-4 my-2 cursor-pointer">
             <div className="flex flex-col flex-grow mx-2 xl:ml-28 xl:mr-96 lg:mx-32 md:mx-40 sm:mx-20">
               <div className="flex items-center mb-1">
                 <Image
@@ -163,66 +163,75 @@ export default function ProfilePage({ params }: { params: { username: string } }
                   quality={100}
                   priority
                 />
-                <Link href={`/profile/${blog.author.username}`} >
+                <Link href={`/profile/${blog.author.username}`}>
                   <p>
-                    <span className="hover:underline text-white font-semibold text-lg">{blog.author.username} </span>
+                    <span className="hover:underline text-white font-semibold text-lg">
+                      {blog.author.username}
+                    </span>
                   </p>
                 </Link>
               </div>
 
-
-              {blog.img ? (
-                <Link href={`/blog/${blog._id}/comments`} >
+              {blog.img && (
+                <Link href={`/blog/${blog._id}/comments`}>
                   <Image
                     alt="blog-image"
                     src={blog.img}
                     width={1000}
                     height={300}
-                    className="rounded-md mt-4 w-full h-auto max-w-auto "
+                    className="rounded-md mt-4 w-full h-auto max-w-auto"
                     quality={100}
-
                     priority
                   />
                 </Link>
-              ) : null}
-
+              )}
 
               {/* Engagement Section */}
               <div className="flex items-center space-x-2 mt-4">
+                <HeartIcon
+                  className={`h-5 w-5 ${color[blog._id] ? "fill-red-700 text-red-700" : "text-gray-500"}`}
+                  onClick={() => handleLikeClick(blog._id)}
+                />
 
-                <HeartIcon className={`h-5 w-5  ${color[blog._id] ? 'fill-red-700 text-red-700' : 'text-gray-500'}`} onClick={() => handleLikeClick(blog._id)} />
-
-
-                <Link href={`/blog/${blog._id}/comments`} className="  flex items-center cursor-pointer text-gray-500 hover:text-gray-800">
-                  <ChatBubbleIcon className='h-5 w-5' />
+                <Link
+                  href={`/blog/${blog._id}/comments`}
+                  className="flex items-center cursor-pointer text-gray-500 hover:text-gray-800"
+                >
+                  <ChatBubbleIcon className="h-5 w-5" />
                 </Link>
-
-
-
               </div>
+
               <span className="text-sm text-white font-medium">
                 {blog.likes.length ? (
-                  <div className='mt-2 font-medium text-base pl-1'>
+                  <div className="mt-2 font-medium text-base pl-1">
                     {blog.likes.length} likes
                   </div>
-                ) : null}</span>
+                ) : null}
+              </span>
 
-              <h4 className="text-base text-white font-normal mt-2 mb-3">  {isTruncated ? blog.text.slice(0, maxLength) : blog.text}
+              <h4 className="text-base text-white font-normal mt-2 mb-3">
+                {isTruncated ? blog.text.slice(0, maxLength) : blog.text}
                 {blog.text.length > maxLength && (
-                  <button onClick={toggleTruncation} className="text-gray-400 ml-1 hover:underline">
+                  <button
+                    onClick={toggleTruncation}
+                    className="text-gray-400 ml-1 hover:underline"
+                  >
                     {isTruncated ? "..." + "more" : "less"}
                   </button>
                 )}
               </h4>
-              <div className="flex items-center my-4">
+
+              <div className="flex items-center my-1">
                 <div className="flex-grow border-b border-gray-700"></div>
               </div>
             </div>
           </li>
-        </div>
-      ))}
-
-    </>
+        ))}
+      </div>
+    ) : (
+      <div className="text-white flex items-center justify-evenly  pt-56">
+        No post has been made
+      </div>
+    )
   );
 }
-

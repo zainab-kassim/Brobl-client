@@ -10,7 +10,7 @@ export default function Home() {
       <section className='p-2 '>
         <SearchInput  />
       </section>
-      <HomePage />
+      <HomePage  />
     
     
 

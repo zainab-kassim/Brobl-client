@@ -11,20 +11,22 @@ export default function RootLayout({
 }>) {
     return (
         <>
-        <section className='px-4 pt-4 '>
-        <SearchInput  />
-      </section>
-        <div className="flex h-screen">
-            {/* Main content */}
-            <Navbar />
+            <section className='px-4 pt-4 '>
+                <SearchInput />
+            </section>
 
-            <div className="lg:ml-64  flex-grow p-2 ">
+            <div className="flex h-screen">
 
-                {children}
+                {/* Main content */}
+                <Navbar />
 
-              <Toaster/>
+                <div className="lg:ml-64  flex-grow p-2 ">
+
+                    {children}
+
+                    <Toaster />
+                </div>
             </div>
-        </div>
         </>
 
 
