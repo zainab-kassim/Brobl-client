@@ -20,6 +20,7 @@ import { isBase64Image } from "@/lib/utils"
 import useBlogsStore from './updateBlog'
 import ButtonLoader from '../ui/buttonLoader'
 import useFormStore from './useForm'
+import useOwnerStore from './owner'
 
 
 
@@ -41,18 +42,10 @@ export default function CreateBlogForm({ action }: { action: string }) {
     const { setBlogs } = useBlogsStore(); // Get the blogs and setBlogs from the store
     const [loading, setLoading] = useState<boolean>(false);
     const { setShowForm } = useFormStore()
+    const { setBlogState } = useOwnerStore()
 
 
 
-    async function HandleUpdatedBlogs() {
-        try {
-            const res = await axios.get('https://brobl-server.vercel.app/api/blog/show');
-            const { foundBlogs } = res.data
-            setBlogs(foundBlogs)
-        } catch (error) {
-            console.log(Error)
-        }
-    }
 
 
     // Initialize form with validation
@@ -85,6 +78,7 @@ export default function CreateBlogForm({ action }: { action: string }) {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true)
         const username = localStorage.getItem('username')
+        const token = localStorage.getItem('token')
         if (!username) {
             toast({
                 description: 'Sign in to continue'
@@ -112,11 +106,7 @@ export default function CreateBlogForm({ action }: { action: string }) {
         // Handle form submission logic (e.g., API call)
         if (action === 'Add') {
             try {
-                // Set loading to true while submitting
 
-                // API call to create interaction
-                const username = localStorage.getItem('username')
-                const token = localStorage.getItem('token')
                 if (username && token) {
                     form.reset();
                     setFiles([]); // Clear the files state to remove the image
@@ -128,8 +118,6 @@ export default function CreateBlogForm({ action }: { action: string }) {
                     const res = await axios.post('https://brobl-server.vercel.app/api/blog/create', {
                         text: values?.text,
                         img: values?.image,
-
-
                     }, { headers })
 
                     const { message, newBlog } = res.data;
@@ -137,8 +125,16 @@ export default function CreateBlogForm({ action }: { action: string }) {
                         description: message,
 
                     });
+                    // When a new blog is added, use addBlog to append the new blog.
+                    useBlogsStore.getState().addBlog(newBlog)
+                    if (username === newBlog.author.username) {
+                        setBlogState(newBlog._id, true);  // Set blog ownership to true
+                    } else {
+                        setBlogState(newBlog._id, false); // Set blog ownership to false
+                    }
 
-                    HandleUpdatedBlogs()
+
+
                     setShowForm(false)
                 } else {
                     router.push('/sign-up')

@@ -20,14 +20,17 @@ interface Likes {
 }
 
 interface BlogsStore {
-    blogs: Blog[]; // Use plural for clarity
-    setBlogs: (value: Blog[]) => void; // Set the parameter type to Blog[]
+    blogs: Blog[]; // Array of Blog objects
+    setBlogs: (value: Blog[]) => void; // Setter to update the entire blog list
+    addBlog: (newBlog: Blog) => void; // Method to add a new blog
 }
 
 
 const useBlogsStore = create<BlogsStore>((set) => ({
-    blogs: [],
-    setBlogs: (value: Blog[]) => set(() => ({ blogs: value })),
+    blogs: [], // Initialize blogs as an empty array
+    setBlogs: (value: Blog[]) => set({ blogs: value }), // Update blogs with the given array
+    addBlog: (newBlog: Blog) =>
+        set((state) => ({ blogs: [...state.blogs, newBlog] })), // Add a new blog to the existing list
 }));
 
 

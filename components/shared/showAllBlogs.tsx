@@ -19,6 +19,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import useOwnerStore from './owner';
 
 
 
@@ -28,12 +29,20 @@ export default function showAllBlogs() {
         [key: string]: boolean; // Each blog ID will map to a boolean indicating like state
     };
 
+
+    // Define the State type to represent a mapping of blog ID to ownership status (true or false)
+    type OwnerState = {
+        [blogId: string]: boolean; // blogId as the key and a boolean value (true or false)
+    };
+
+
     const { blogs, setBlogs } = useBlogsStore(); // Get the blogs and setBlogs from the store
     const [loading, setLoading] = useState(true); // Add loading state
     const [isTruncated, setIsTruncated] = useState(true); // State for truncation
     const maxLength = 135; // The maximum length before 
     const [color, setColor] = useState<ColorState>({});
-    const [isOwner, setisOwner] = useState(false);
+    const { BlogOwner, setBlogState } = useOwnerStore()
+
     const router = useRouter();
     const { toast } = useToast();
 
@@ -42,6 +51,12 @@ export default function showAllBlogs() {
     const toggleTruncation = () => {
         setIsTruncated(!isTruncated); // Toggle between truncated and full text
     };
+
+    interface EachBlog {
+        author: { username: string };
+        _id: string;
+        likes: (string | null)[];
+    }
 
 
     function isTokenValid() {
@@ -85,15 +100,20 @@ export default function showAllBlogs() {
             // Check each blog for likes
             const updatedColor: ColorState = {};
 
-            foundBlogs.forEach((blog: { _id: string; likes: (string | null)[] }) => {
+            const updatedIsOwner: OwnerState = {};
+
+            foundBlogs.forEach((blog: EachBlog) => {
                 updatedColor[blog._id] = blog.likes.includes(username); // Set true or false based on likes
+                updatedIsOwner[blog._id] = username === blog.author.username; // Track owner status for each blog
             })
-            if (username === foundBlogs.author.username) {
-                setisOwner(true)
-            }
 
             setBlogs(foundBlogs)
+            
             setColor(updatedColor)
+            // Update the isOwner state for all blogs, passing the entire updatedIsOwner object
+            Object.keys(updatedIsOwner).forEach((blogId) => {
+                setBlogState(blogId, updatedIsOwner[blogId]); // Set the ownership status for each blog
+            })
         } catch (error) {
             toast({
                 description: "error fetching blogs"
@@ -195,13 +215,13 @@ export default function showAllBlogs() {
                                         </p>
                                     </Link>
                                 </div>
-                                {isOwner && (
+                                {BlogOwner[blog._id] && (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger>
                                             <EllipsisIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 inline-flex" />
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                            <button onClick={()=>handleDeleteBlog(blog._id)}>
+                                            <button onClick={() => handleDeleteBlog(blog._id)}>
                                                 <p className=' font-base px-1'>Delete</p>
                                             </button>
                                         </DropdownMenuContent>
