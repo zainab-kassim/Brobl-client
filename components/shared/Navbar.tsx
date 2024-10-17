@@ -38,13 +38,12 @@ export default function Navbar() {
     function handleProfileClick() {
         const username = localStorage.getItem('username')
         if (username) {
-
             router.push(`/profile/${username}`)
-
         } else {
             toast({
                 description: 'Please sign in to view your profile',
             })
+            router.push('/sign-in')
         }
     }
 
@@ -64,7 +63,15 @@ export default function Navbar() {
     }
 
     function handleShowForm() {
+        const username = localStorage.getItem('username')
+        if(username){
         setShowForm(true);
+        }else{
+            toast({
+                description: 'Sign in to continue'// Show the toast message
+            })
+            router.push('/sign-in')
+        }
     };
     function handleCloseForm() {
         console.log('Closing the form'); // Check if this logs

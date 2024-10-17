@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BookLockIcon, BookmarkIcon, HeartIcon } from 'lucide-react'
+import { BookLockIcon, BookmarkIcon, EllipsisIcon, HeartIcon } from 'lucide-react'
 import { ChatBubbleIcon } from '@radix-ui/react-icons'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -14,6 +14,13 @@ import profilePic from '../../public/man.png'
 import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
 import useBlogsStore from './updateBlog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+
 
 
 export default function showAllBlogs() {
@@ -26,6 +33,7 @@ export default function showAllBlogs() {
     const [isTruncated, setIsTruncated] = useState(true); // State for truncation
     const maxLength = 135; // The maximum length before 
     const [color, setColor] = useState<ColorState>({});
+    const [isOwner, setisOwner] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
@@ -80,6 +88,9 @@ export default function showAllBlogs() {
             foundBlogs.forEach((blog: { _id: string; likes: (string | null)[] }) => {
                 updatedColor[blog._id] = blog.likes.includes(username); // Set true or false based on likes
             })
+            if (username === foundBlogs.author.username) {
+                setisOwner(true)
+            }
 
             setBlogs(foundBlogs)
             setColor(updatedColor)
@@ -119,10 +130,30 @@ export default function showAllBlogs() {
                 setColor(prev => ({ ...prev, [blogId]: !prev[blogId] })); // Toggle the like state
 
                 handleBlogs()
-            }else{
+            } else {
                 toast({
-                    description:'sign in to continue'
+                    description: 'sign in to continue'
                 })
+                router.push('/sign-in')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function handleDeleteBlog(blogId: string) {
+        try {
+            const username = localStorage.getItem('username')
+            const token = localStorage.getItem('token')
+            const headers = createAuthHeaders(token)
+            if (username && token) {
+                const response = await axios.delete(`https://brobl-server.vercel.app/api/blog/${blogId}/delete`,
+                    { headers })
+                const { message } = response.data
+                toast({
+                    description: message
+                })
+                handleBlogs()
             }
         } catch (error) {
             console.log(error)
@@ -147,23 +178,36 @@ export default function showAllBlogs() {
                 <div key={blog._id}>
                     <li className="flex p-4 my-2  cursor-pointer">
                         <div className="flex flex-col flex-grow mx-2 xl:ml-28 xl:mr-96 lg:mx-32 md:mx-40 sm:mx-20">
-                            <div className="flex items-center mb-1">
-                                <Image
-                                    src={profilePic}
-                                    alt="profilepic"
-                                    width={100}
-                                    height={100}
-                                    className="w-8 h-8 rounded-full mr-2"
-                                    quality={100}
-                                    priority
-                                />
-                                <Link href={`/profile/${blog.author.username}`} >
-                                    <p>
-                                        <span className="hover:underline text-white font-semibold text-lg">{blog.author.username} </span>
-                                    </p>
-                                </Link>
+                            <div className="flex items-center  justify-between mb-1 ">
+                                <div className="flex items-center mb-1">
+                                    <Image
+                                        src={profilePic}
+                                        alt="profilepic"
+                                        width={100}
+                                        height={100}
+                                        className="w-8 h-8 rounded-full mr-2"
+                                        quality={100}
+                                        priority
+                                    />
+                                    <Link href={`/profile/${blog.author.username}`} >
+                                        <p>
+                                            <span className="hover:underline text-white font-semibold text-lg">{blog.author.username} </span>
+                                        </p>
+                                    </Link>
+                                </div>
+                                {isOwner && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>
+                                            <EllipsisIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 inline-flex" />
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <button onClick={()=>handleDeleteBlog(blog._id)}>
+                                                <p className=' font-base px-1'>Delete</p>
+                                            </button>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
                             </div>
-
 
                             {blog.img ? (
                                 <Link href={`/blog/${blog._id}/comments`} >

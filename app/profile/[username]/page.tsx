@@ -50,7 +50,6 @@ export default function ProfilePage({ params }: { params: { username: string } }
   async function handleProfile() {
     try {
       if (params.username) {
-
         const username = localStorage.getItem('username')
         const res = await axios.get(`https://brobl-server.vercel.app/api/blog/userProfile/${params.username}`);
         const { foundUserBlogs } = res.data

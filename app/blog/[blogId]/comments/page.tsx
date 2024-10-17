@@ -118,6 +118,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
         toast({
           description: "Create an account to comment"
         })
+        router.push('/sign-in')
       }
 
     } catch (error) {
@@ -222,6 +223,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
         toast({
             description:'sign in to continue'
         })
+        router.push('/sign-in')
     }
     } catch (error) {
       console.log(error)
