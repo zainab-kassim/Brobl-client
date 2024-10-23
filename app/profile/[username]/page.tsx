@@ -122,7 +122,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
         toast({
           description: message
         })
-        router.push('/')
+   
       }
     } catch (error) {
       console.log(error)
