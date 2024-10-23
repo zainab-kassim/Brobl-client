@@ -9,7 +9,7 @@ import { HeartIcon } from 'lucide-react';
 import { ChatBubbleIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import profilePic from '../../../public/man.png'
-import ProfileLoader from '@/components/ui/loader2';
+
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
   const [userBlogs, setuserBlogs] = useState<userBlogs[]>([])

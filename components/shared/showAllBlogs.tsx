@@ -1,18 +1,15 @@
 'use client'
 import React from 'react'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BookLockIcon, BookmarkIcon, EllipsisIcon, HeartIcon } from 'lucide-react'
+import { EllipsisIcon, HeartIcon } from 'lucide-react'
 import { ChatBubbleIcon } from '@radix-ui/react-icons'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useToast } from '@/hooks/use-toast'
 import Loader from '../ui/loader'
-import { SkeletonCard } from './skeletoncard';
 import Link from 'next/link'
 import Image from 'next/image'
 import profilePic from '../../public/man.png'
 import { useRouter } from 'next/navigation';
-import { useSnackbar } from 'notistack';
 import useBlogsStore from '../../app/store/updateBlog';
 import {
     DropdownMenu,
