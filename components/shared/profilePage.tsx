@@ -18,28 +18,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
   const [color, setColor] = useState<ColorState>({});
   const { toast } = useToast();
 
-  type ColorState = {
-    [key: string]: boolean; // Each blog ID will map to a boolean indicating like state
-  };
 
-  interface Author {
-    username: string;
-    _id: string;
-  }
-
-  interface userBlogs {
-    author: Author;
-    username: string;
-    _id: string;
-    text: string;
-    img: string;
-    likes: Likes[];
-
-  }
-
-  interface Likes {
-    _id: string;
-  }
 
   const toggleTruncation = () => {
     setIsTruncated(!isTruncated); // Toggle between truncated and full text

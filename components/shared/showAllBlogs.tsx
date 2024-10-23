@@ -13,29 +13,18 @@ import Image from 'next/image'
 import profilePic from '../../public/man.png'
 import { useRouter } from 'next/navigation';
 import { useSnackbar } from 'notistack';
-import useBlogsStore from './updateBlog';
+import useBlogsStore from '../../app/store/updateBlog';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import useOwnerStore from './owner';
+import useOwnerStore from '../../app/store/owner';
 
 
 
 
 export default function showAllBlogs() {
-    type ColorState = {
-        [key: string]: boolean; // Each blog ID will map to a boolean indicating like state
-    };
-
-
-    // Define the State type to represent a mapping of blog ID to ownership status (true or false)
-    type OwnerState = {
-        [blogId: string]: boolean; // blogId as the key and a boolean value (true or false)
-    };
-
-
     const { blogs, setBlogs } = useBlogsStore(); // Get the blogs and setBlogs from the store
     const [loading, setLoading] = useState(true); // Add loading state
     const [isTruncated, setIsTruncated] = useState(true); // State for truncation
@@ -51,12 +40,6 @@ export default function showAllBlogs() {
     const toggleTruncation = () => {
         setIsTruncated(!isTruncated); // Toggle between truncated and full text
     };
-
-    interface EachBlog {
-        author: { username: string };
-        _id: string;
-        likes: (string | null)[];
-    }
 
 
     function isTokenValid() {
@@ -108,7 +91,7 @@ export default function showAllBlogs() {
             })
 
             setBlogs(foundBlogs)
-            
+
             setColor(updatedColor)
             // Update the isOwner state for all blogs, passing the entire updatedIsOwner object
             Object.keys(updatedIsOwner).forEach((blogId) => {
@@ -210,9 +193,9 @@ export default function showAllBlogs() {
                                         priority
                                     />
                                     <Link href={`/profile/${blog.author.username}`} >
-                                        <p>
-                                            <span className="hover:underline text-white font-semibold text-lg">{blog.author.username} </span>
-                                        </p>
+
+                                        <span className="hover:underline text-white font-semibold pr-1 text-lg">{blog.author.username} </span>
+
                                     </Link>
                                 </div>
                                 {BlogOwner[blog._id] && (

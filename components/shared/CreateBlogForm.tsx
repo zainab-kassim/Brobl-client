@@ -17,10 +17,10 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useUploadThing } from "@/lib/uploadthing"
 import { isBase64Image } from "@/lib/utils"
-import useBlogsStore from './updateBlog'
+import useBlogsStore from '../../app/store/updateBlog'
 import ButtonLoader from '../ui/buttonLoader'
-import useFormStore from './useForm'
-import useOwnerStore from './owner'
+import useFormStore from '../../app/store/useForm'
+import useOwnerStore from '../../app/store/owner'
 
 
 

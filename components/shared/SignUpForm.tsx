@@ -9,13 +9,12 @@ import {
   FormField,
   FormMessage,
 } from "@/components/ui/form"
-import Pic1 from "../../public/julian-hochgesang-7SV4cz3UFEI-unsplash.jpg"
-import Image from "next/image"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
-
+import { useState } from "react"
+import ButtonLoader from "../ui/buttonLoader"
 
 
 
@@ -34,6 +33,7 @@ const FormSchema = z.object({
 export default function SignUpForm() {
   const { toast } = useToast()
   const router = useRouter()
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -47,7 +47,7 @@ export default function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     try {
-
+      setLoading(true)
       const res = await axios.post('https://brobl-server.vercel.app/api/user/signup', {
         username: values.username,
         password: values.password
@@ -75,6 +75,8 @@ export default function SignUpForm() {
       }
 
       console.log(error);
+    } finally {
+      setLoading(false); // Set loading to false when data is fetched or an error occurs
     }
 
   }
@@ -132,9 +134,14 @@ export default function SignUpForm() {
               Already have an account? <a className="underline" href="/sign-in">Sign in</a>
             </p>
             <div className="flex justify-center max-w-96 mt-9">
-              <Button type="submit" className="text-center  bg-black text-white w-full ">
-                Sign up
+              <Button
+                type="submit"
+                className="flex items-center justify-center bg-black text-white w-full"
+              >
+                Sign in
+                {loading && <span className="ml-2 flex items-center"><ButtonLoader /></span>}
               </Button>
+
             </div>
           </form>
         </Form>

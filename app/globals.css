@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: 'Island Moments';
-  src: url('./fonts/IslandMoments-Regular.ttf') format('truetype');    
+  src: url('../app/fonts/IslandMoments-Regular.ttf') format('truetype');    
   font-style:  italic;  /* Set the style (normal/italic) */
 }
 

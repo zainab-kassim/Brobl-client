@@ -1,12 +1,6 @@
 import { create } from 'zustand'
 
 
-// Define the type for the store's state and actions
-interface AuthState {
-    isLoggedIn: boolean; // The boolean state
-    setisLoggedIn: (value: boolean) => void; // The function to update the state
-}
-
 
 
 // Create the Zustand store

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import { IslandMoments } from '@/app/font';
 import { LogInIcon, LogOutIcon } from 'lucide-react';
-import useAuthStore from './store';
+import useAuthStore from '../../app/store/store';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 

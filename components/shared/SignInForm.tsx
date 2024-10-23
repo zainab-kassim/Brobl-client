@@ -12,10 +12,9 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import Pic1 from "../../public/andrew-neel-cckf4TsHAuw-unsplash.jpg"
-import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
-import { Island_Moments } from 'next/font/google';
+import { useState } from 'react'
+import ButtonLoader from '../ui/buttonLoader'
 
 
 
@@ -30,7 +29,7 @@ const FormSchema = z.object({
 
 
 export default function SignInForm() {
-
+    const [loading, setLoading] = useState(false); // Add loading state
     const { toast } = useToast()
     const router = useRouter()
 
@@ -44,6 +43,7 @@ export default function SignInForm() {
 
     async function onSubmit(values: z.infer<typeof FormSchema>) {
         try {
+            setLoading(true)
             const res = await axios.post('https://brobl-server.vercel.app/api/user/signin', {
                 username: values.username,
                 password: values.password
@@ -54,7 +54,7 @@ export default function SignInForm() {
             if (token) {
                 router.push('/')
                 toast({
-                   description:res.data.message // Show the toast message
+                    description: res.data.message // Show the toast message
                 })
             } else {
                 toast({
@@ -73,6 +73,8 @@ export default function SignInForm() {
             }
 
             console.log(error);
+        } finally {
+            setLoading(false); // Set loading to false when data is fetched or an error occurs
         }
     }
 
@@ -81,9 +83,9 @@ export default function SignInForm() {
         <div className="flex justify-center min-h-screen bg-white" >
             <div className="bg-white rounded-3xl mx-2 px-7 py-16  my-auto shadow-sm drop-shadow-xl ">
                 <div className="mx-auto max-w-lg text-center">
-                    <h1 className={`font-island-moments text-7xl`}>Brobl</h1>
+                    <h1 className="font-island-moments text-7xl">Brobl</h1>
                     <p className="mb-4 px-2 text-base font-normal text-zinc-700">
-                    Back to Brobl! Lets start exploring today
+                        Back to Brobl! Lets start exploring today
                     </p>
                 </div>
                 <Form {...form}>
@@ -128,9 +130,14 @@ export default function SignInForm() {
                             Don't have an account? <a className="underline" href="/sign-up">Sign up</a>
                         </p>
                         <div className="flex justify-center max-w-md mt-9">
-                            <Button type="submit" className="text-center  bg-black text-white w-full">
+                            <Button
+                                type="submit"
+                                className="flex items-center justify-center bg-black text-white w-full"
+                            >
                                 Sign in
+                                {loading && <span className="ml-2 flex items-center"><ButtonLoader /></span>}
                             </Button>
+
                         </div>
                     </form>
                 </Form>

@@ -2,15 +2,13 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import axios from 'axios';
-import { DivideIcon, EllipsisIcon, EllipsisVertical, EllipsisVerticalIcon, HeartIcon } from 'lucide-react'
+import { EllipsisIcon, HeartIcon } from 'lucide-react'
 import { ChatBubbleIcon } from '@radix-ui/react-icons'
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   FormField,
   Form,
-  FormMessage,
-  FormLabel
 } from "@/components/ui/form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,7 +18,6 @@ import Loader from '@/components/ui/loader';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { SkeletonCard } from '@/components/shared/skeletoncard';
 import ProfilePic from './../../../../public/man.png';
 import {
   DropdownMenu,
@@ -48,43 +45,13 @@ export default function comments({ params }: { params: { blogId: string } }) {
 
 
 
-
-  type ColorState = {
-    [key: string]: boolean; // Each blog ID will map to a boolean indicating like state
-  };
-
-
-
   // Initialize form with validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { text: '' } // Ensure default values match schema
   });
 
-  interface Author {
-    username: string;
-    _id:string;
-  }
 
-  interface Comment {
-    author: { username: string,_id:string };
-    _id: string;
-    text: string;
-  }
-
-  interface Blog {
-    author: Author;
-    username: string;
-    _id: string;
-    text: string;
-    img: string;
-    likes: Likes[];
-    comments: Comment[];
-  }
-
-  interface Likes {
-    _id: string;
-  }
 
 
 
@@ -153,7 +120,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
       setCommentOwner(username)
       setBlog(foundBlog)
       setColor(updatedColor)
-  
+
 
     } catch (error) {
       toast({
@@ -211,20 +178,20 @@ export default function comments({ params }: { params: { blogId: string } }) {
 
       if (username && token) {
 
-        const response = await axios.post(`https://brobl-server.vercel.app/api/blog/${blogId}/like`,{ 
-        },{ headers })
+        const response = await axios.post(`https://brobl-server.vercel.app/api/blog/${blogId}/like`, {
+        }, { headers })
 
         toast({
           description: response.data.message
         })
         setColor(prev => ({ ...prev, [blogId]: !prev[blogId] })); // Toggle the like state
         handleBlog()
-      }else{
+      } else {
         toast({
-            description:'sign in to continue'
+          description: 'sign in to continue'
         })
         router.push('/sign-in')
-    }
+      }
     } catch (error) {
       console.log(error)
     }
@@ -341,7 +308,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
                             priority
                           />
                           <Link href={`/profile/${comment.author.username}`}>
-                          <h3 className="text-lg hover:underline font-semibold text-white">{comment.author.username}</h3>
+                            <h3 className="text-lg hover:underline font-semibold text-white">{comment.author.username}</h3>
                           </Link>
                         </div>
                         {comment.author.username === commentOwner && (
@@ -408,97 +375,7 @@ export default function comments({ params }: { params: { blogId: string } }) {
             </div>
           </li>
         </div>
-
-
       )}
-
-
-
-
-
-
-
-
-      {/* {Blog && (
-        <div className="flex flex-col md:grid md:grid-cols-2 mx-auto  gap-3 pb-20  sm:pb-20 md:p-10">
-          <div className="md:col-span-1 xs:hidden">
-
-            <Image
-              alt="Blog Image"
-              src={Blog.img} // No need for optional chaining since Blog is guaranteed to exist
-              width={200}
-              height={300}
-              className="w-full max-h-80   pb-1 rounded-lg object-cover" />
-
-
-            <div className="bg-white text-left">
-              <div className="flex pt-1 space-x-4">
-                <HeartIcon className="h-10 w-6 text-black" />
-                <Link href='/'>
-                  <ChatBubbleIcon className="h-9 w-6 text-black" />
-                </Link>
-              </div>
-            </div>
-
-          </div>
-          <div className="md:col-span-1 max-h-80   bg-white flex flex-col">
-            <h3 className="text-lg font-semibold text-gray-900">{Blog.author.username}</h3>
-            <div className="bg-white text-left pb-2">
-              {Blog.text}
-            </div>
-            <hr className='h-px' />
-
-            <div className="max-h-72 overflow-y-auto  px-1 hide-scrollbar">
-              {Blog.comments.length > 0 && (
-
-                Blog.comments.map((comment) => (
-                  <div key={comment._id}>
-                    <h3 className="text-lg font-semibold  text-gray-900">{comment.author.username}</h3>
-                    <p className=" text-sm pb-2 text-gray-500">
-                      {comment.text}
-                    </p>
-                  </div>
-                ))
-
-              )}
-            </div>
-            <hr className='h-px' />
-            <section className='my-4'>
-
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                  <div className="flex items-center space-x-4">
-                    <FormField
-                      control={form.control}
-                      name="text"
-                      render={({ field }) => (
-                        <label
-                          htmlFor="comment"
-                          className="relative block flex-grow overflow-hidden border-b border-gray-900 bg-transparent pt-5 focus-within:border-gray-700"
-                        >
-                          <Input
-                            id="comment"
-                            {...field}
-                            className="h-8 w-full bg-transparent border-none px-2 placeholder-transparent focus:outline-none focus:ring-0 sm:text-sm" />
-                          <span
-                            className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs"
-                          >
-                            Add a comment
-                          </span>
-                        </label>
-                      )} />
-                    <Button type="submit" className="mt-3 flex-shrink-0">post</Button>
-                  </div>
-                </form>
-              </Form>
-            </section>
-          </div>
-        </div>
-
-      )} */}
     </>
-
-
-
   )
 }
