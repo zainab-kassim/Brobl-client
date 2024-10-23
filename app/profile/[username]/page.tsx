@@ -109,6 +109,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
   if (loading) {
     return <Loader />; // Show loader while data is being fetched
   }
+
   async function handleDeleteBlog(blogId: string) {
     try {
       const username = localStorage.getItem('username')
@@ -167,7 +168,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
         {userBlogs.map((blog) => (
           <li key={blog._id} className=" flex p-4 my-2 cursor-pointer">
             <div className="flex flex-col flex-grow mx-2 xl:ml-28 xl:mr-96 lg:mx-32 md:mx-40 sm:mx-20">
-              <div className="flex items-center mb-1">
+              <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center">
                   <Image
                     src={profilePic}
