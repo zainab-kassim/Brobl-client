@@ -5,24 +5,33 @@ import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Loader from '@/components/ui/loader';
-import { HeartIcon } from 'lucide-react';
+import { EllipsisIcon, HeartIcon } from 'lucide-react';
 import { ChatBubbleIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import profilePic from '../../../public/man.png'
+import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
+  const router = useRouter();
   const [userBlogs, setuserBlogs] = useState<userBlogs[]>([])
   const [loading, setLoading] = useState(true); // Add loading state
   const [isTruncated, setIsTruncated] = useState(true); // State for truncation
+  const [isOwner, setIsOwner] = useState(false);
   const maxLength = 50; // The maximum length before 
   const [color, setColor] = useState<ColorState>({});
   const { toast } = useToast();
 
 
-  
 
-  
+
+
 
   const toggleTruncation = () => {
     setIsTruncated(!isTruncated); // Toggle between truncated and full text
@@ -39,9 +48,15 @@ export default function ProfilePage({ params }: { params: { username: string } }
         // Check each blog for likes
         const updatedColor: ColorState = {};
 
-        foundUserBlogs.forEach((blog: { _id: string; likes: (string | null)[] }) => {
+        foundUserBlogs.forEach((blog: { author: { username: string }; _id: string; likes: (string | null)[] }) => {
           updatedColor[blog._id] = blog.likes.includes(username); // Set true or false based on likes
+          if (username === blog.author.username) {
+            setIsOwner(true)
+          }else{
+            setIsOwner(false)
+          }
         })
+
 
         setColor(updatedColor)
         setuserBlogs(foundUserBlogs)
@@ -94,6 +109,24 @@ export default function ProfilePage({ params }: { params: { username: string } }
   if (loading) {
     return <Loader />; // Show loader while data is being fetched
   }
+  async function handleDeleteBlog(blogId: string) {
+    try {
+      const username = localStorage.getItem('username')
+      const token = localStorage.getItem('token')
+      const headers = createAuthHeaders(token)
+      if (username && token) {
+        const response = await axios.delete(`https://brobl-server.vercel.app/api/blog/${blogId}/delete`,
+          { headers })
+        const { message } = response.data
+        toast({
+          description: message
+        })
+        router.push('/')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   function createAuthHeaders(token: string | null) {
@@ -135,22 +168,36 @@ export default function ProfilePage({ params }: { params: { username: string } }
           <li key={blog._id} className=" flex p-4 my-2 cursor-pointer">
             <div className="flex flex-col flex-grow mx-2 xl:ml-28 xl:mr-96 lg:mx-32 md:mx-40 sm:mx-20">
               <div className="flex items-center mb-1">
-                <Image
-                  src={profilePic}
-                  alt="profilepic"
-                  width={100}
-                  height={100}
-                  className="w-8 h-8 rounded-full mr-2"
-                  quality={100}
-                  priority
-                />
-                <Link href={`/profile/${blog.author.username}`}>
-                  <p>
-                    <span className="hover:underline text-white font-semibold text-lg">
-                      {blog.author.username}
-                    </span>
-                  </p>
-                </Link>
+                <div className="flex items-center">
+                  <Image
+                    src={profilePic}
+                    alt="profilepic"
+                    width={100}
+                    height={100}
+                    className="w-8 h-8 rounded-full mr-2"
+                    quality={100}
+                    priority
+                  />
+                  <Link href={`/profile/${blog.author.username}`}>
+                    <p>
+                      <span className="hover:underline text-white font-semibold text-lg">
+                        {blog.author.username}
+                      </span>
+                    </p>
+                  </Link>
+                </div>
+                {isOwner && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <EllipsisIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 inline-flex" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <button onClick={() => handleDeleteBlog(blog._id)}>
+                        <p className=' font-base px-1'>Delete</p>
+                      </button>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
 
               {blog.img && (
